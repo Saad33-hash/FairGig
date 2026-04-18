@@ -26,6 +26,26 @@ async function seed() {
   await mongoose.connect(process.env.MONGO_URI);
   console.log('Connected to MongoDB');
 
+  // Seed hardcoded admin user
+  const bcrypt = require('bcryptjs');
+  const adminEmail = 'admin@faircig.com';
+  let admin = await User.findOne({ email: adminEmail });
+  if (!admin) {
+    admin = await User.create({
+      firstName: 'Admin',
+      lastName: 'FairGig',
+      email: adminEmail,
+      password: await bcrypt.hash('Admin123!', 10),
+      provider: 'local',
+      isVerified: true,
+      role: 'admin',
+      status: 'approved',
+    });
+    console.log('Created admin: admin@faircig.com / Admin123!');
+  } else {
+    console.log('Admin already exists, skipping.');
+  }
+
   // Find or create seed worker accounts per city/category combo
   const workers = [];
   for (const city of CITIES) {

@@ -5,6 +5,7 @@ const ROLE_HOME = {
   worker:   '/app/worker/dashboard',
   verifier: '/app/verifier/queue',
   advocate: '/app/advocate/dashboard',
+  admin:    '/app/admin/dashboard',
 };
 
 export default function ProtectedRoute({ children, allowedRoles }) {
@@ -21,6 +22,11 @@ export default function ProtectedRoute({ children, allowedRoles }) {
 
   if (!token || !user) {
     return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  // Pending/rejected users can only access the holding screen
+  if (user.status !== 'approved' && location.pathname !== '/app/pending') {
+    return <Navigate to="/app/pending" replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {

@@ -88,6 +88,7 @@ const serializeUser = (user) => ({
   email: user.email,
   avatar: user.avatar,
   role: user.role,
+  status: user.status,
   city: user.city,
   category: user.category,
 });
@@ -139,6 +140,7 @@ const signup = async (req, res) => {
       avatar: buildAvatarUrl(firstName.trim(), lastName.trim()),
       provider: 'local',
       role,
+      status: role === 'worker' ? 'approved' : 'pending',
       city: city ? city.trim() : '',
       category: role === 'worker' ? category : '',
       isVerified: false,
@@ -213,6 +215,10 @@ const login = async (req, res) => {
 
     if (!user.isVerified) {
       return res.status(403).json({ message: 'Please verify your email first' });
+    }
+
+    if (user.status === 'rejected') {
+      return res.status(403).json({ message: 'Your account was not approved. Please contact support.', status: 'rejected' });
     }
 
     const token        = createJwt(user);

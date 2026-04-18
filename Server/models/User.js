@@ -38,8 +38,13 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['worker', 'verifier', 'advocate'],
+      enum: ['worker', 'verifier', 'advocate', 'admin'],
       default: 'worker',
+    },
+    status: {
+      type: String,
+      enum: ['approved', 'pending', 'rejected'],
+      default: 'approved',
     },
     city: {
       type: String,

@@ -8,6 +8,7 @@ import SignupPage from './pages/SignupPage';
 import OAuthCallbackPage from './pages/OAuthCallbackPage';
 import GrievanceBoardPage from './pages/GrievanceBoardPage';
 import LandingPage from './pages/LandingPage';
+import PendingApprovalPage from './pages/PendingApprovalPage';
 
 import WorkerDashboardPage from './pages/worker/WorkerDashboardPage';
 import EarningsPage from './pages/worker/EarningsPage';
@@ -18,21 +19,34 @@ import VerifierQueuePage from './pages/verifier/VerifierQueuePage';
 import AdvocateDashboardPage from './pages/advocate/AdvocateDashboardPage';
 import AdvocateModerationPage from './pages/advocate/AdvocateModerationPage';
 
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+
 const ROLE_HOME = {
-  worker: '/app/worker/dashboard',
+  worker:   '/app/worker/dashboard',
   verifier: '/app/verifier/queue',
   advocate: '/app/advocate/dashboard',
+  admin:    '/app/admin/dashboard',
 };
 
 function RoleRedirect() {
   const { user } = useAuth();
-  return <Navigate to={ROLE_HOME[user?.role] ?? '/login'} replace />;
+
+  if (!user) return <Navigate to="/login" replace />;
+
+  if (user.status === 'pending' || user.status === 'rejected') {
+    return <Navigate to="/app/pending" replace />;
+  }
+
+  return <Navigate to={ROLE_HOME[user.role] ?? '/login'} replace />;
 }
 
 function HomeRoute() {
   const { token, user } = useAuth();
 
   if (token && user) {
+    if (user.status === 'pending' || user.status === 'rejected') {
+      return <Navigate to="/app/pending" replace />;
+    }
     return <Navigate to={ROLE_HOME[user.role] ?? '/app'} replace />;
   }
 
@@ -53,6 +67,12 @@ function App() {
         element={<ProtectedRoute><RoleRedirect /></ProtectedRoute>}
       />
 
+      {/* Pending / rejected holding screen */}
+      <Route
+        path="/app/pending"
+        element={<ProtectedRoute><PendingApprovalPage /></ProtectedRoute>}
+      />
+
       {/* Worker */}
       <Route path="/app/worker/dashboard" element={<ProtectedRoute allowedRoles={['worker']}><WorkerDashboardPage /></ProtectedRoute>} />
       <Route path="/app/worker/earnings"   element={<ProtectedRoute allowedRoles={['worker']}><EarningsPage /></ProtectedRoute>} />
@@ -64,6 +84,9 @@ function App() {
       {/* Advocate */}
       <Route path="/app/advocate/dashboard"   element={<ProtectedRoute allowedRoles={['advocate']}><AdvocateDashboardPage /></ProtectedRoute>} />
       <Route path="/app/advocate/moderation"  element={<ProtectedRoute allowedRoles={['advocate']}><AdvocateModerationPage /></ProtectedRoute>} />
+
+      {/* Admin */}
+      <Route path="/app/admin/dashboard" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboardPage /></ProtectedRoute>} />
 
       {/* Shared — all authenticated roles */}
       <Route path="/app/grievances" element={<ProtectedRoute><GrievanceBoardPage /></ProtectedRoute>} />
