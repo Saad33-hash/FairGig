@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
+import WorkerLayout from '../components/WorkerLayout';
 import { api } from '../utils/api';
 import { useAuth } from '../hooks/useAuth';
 import { notifyError, notifySuccess } from '../utils/notify';
@@ -169,9 +170,8 @@ export default function GrievanceBoardPage() {
 
   const pages = Math.ceil(total / 15);
 
-  return (
-    <div className="min-h-screen flex flex-col bg-slate-100">
-      <Navbar />
+  const boardContent = (
+    <>
       <main className="flex-1 max-w-4xl mx-auto w-full px-6 py-8 flex flex-col gap-6">
 
         <div className="flex items-start justify-between">
@@ -227,6 +227,17 @@ export default function GrievanceBoardPage() {
       </main>
 
       {showModal && <PostModal onClose={() => setShowModal(false)} onPosted={handlePosted} />}
+    </>
+  );
+
+  if (user?.role === 'worker') {
+    return <WorkerLayout>{boardContent}</WorkerLayout>;
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col bg-slate-100">
+      <Navbar />
+      {boardContent}
     </div>
   );
 }
