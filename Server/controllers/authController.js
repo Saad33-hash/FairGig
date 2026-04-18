@@ -217,10 +217,6 @@ const login = async (req, res) => {
       return res.status(403).json({ message: 'Please verify your email first' });
     }
 
-    if (user.status === 'rejected') {
-      return res.status(403).json({ message: 'Your account was not approved. Please contact support.', status: 'rejected' });
-    }
-
     const token        = createJwt(user);
     const refreshToken = createRefreshToken(user);
     setRefreshCookie(res, refreshToken);

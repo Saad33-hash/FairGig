@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../utils/api';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function AdminDashboardPage() {
+  const { logout } = useAuth();
   const [users, setUsers]     = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState('');
@@ -32,7 +34,15 @@ export default function AdminDashboardPage() {
   return (
     <div className="min-h-screen bg-gray-950 px-4 py-10">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold text-white mb-2">Admin Dashboard</h1>
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
+          <button
+            onClick={logout}
+            className="px-4 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white text-sm font-medium transition-colors border border-gray-700"
+          >
+            Sign out
+          </button>
+        </div>
         <p className="text-gray-400 mb-8">Review and approve pending Verifier / Advocate accounts.</p>
 
         {error && (

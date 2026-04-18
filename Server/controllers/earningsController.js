@@ -173,11 +173,29 @@ const csvImport = async (req, res) => {
     if (parseError) return res.status(400).json({ message: 'Could not parse CSV: ' + parseError.message });
     if (rows.length === 0) return res.status(400).json({ message: 'CSV file is empty' });
 
+    // Normalize column names: snake_case / Title Case → camelCase
+    const normalizeRow = (row) => {
+      const map = {
+        hours_worked: 'hoursWorked', hoursworked: 'hoursWorked',
+        'hours worked': 'hoursWorked',
+        gross_earned: 'grossEarned', grossearned: 'grossEarned',
+        'gross earned': 'grossEarned',
+        platform_deductions: 'platformDeductions', platformdeductions: 'platformDeductions',
+        'platform deductions': 'platformDeductions',
+      };
+      const out = {};
+      for (const [k, v] of Object.entries(row)) {
+        const norm = map[k.trim().toLowerCase()] || k.trim();
+        out[norm] = v;
+      }
+      return out;
+    };
+
     const inserted = [];
     const failed = [];
 
     for (let i = 0; i < rows.length; i++) {
-      const row = rows[i];
+      const row = normalizeRow(rows[i]);
       const error = validateShiftFields(row);
       if (error) {
         failed.push({ row: i + 2, reason: error });

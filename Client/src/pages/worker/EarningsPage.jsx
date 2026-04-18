@@ -202,10 +202,12 @@ export default function EarningsPage() {
     setShowModal(false); setEditTarget(null); fetchShifts(page);
   };
 
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this shift?')) return;
     try { await api.delete(`/earnings/shifts/${id}`); notifySuccess('Shift deleted'); fetchShifts(page); }
     catch (err) { notifyError(err.response?.data?.message || 'Failed to delete'); }
+    finally { setConfirmDeleteId(null); }
   };
 
   const handleCsvUpload = async (e) => {
@@ -342,7 +344,33 @@ export default function EarningsPage() {
                             <button className="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors" onClick={() => setScreenshotShiftId(s._id)}>View</button>
                           )}
                           {s.verificationStatus !== 'verified' && (
-                            <button className="px-2.5 py-1 rounded-lg text-xs font-medium bg-red-50 text-red-700 hover:bg-red-100 transition-colors" onClick={() => handleDelete(s._id)}>Delete</button>
+                            <div className="relative">
+                              <button
+                                className="px-2.5 py-1 rounded-lg text-xs font-medium bg-red-50 text-red-700 hover:bg-red-100 transition-colors"
+                                onClick={() => setConfirmDeleteId(confirmDeleteId === s._id ? null : s._id)}
+                              >
+                                Delete
+                              </button>
+                              {confirmDeleteId === s._id && (
+                                <div className="absolute bottom-full right-0 mb-2 z-20 w-44 bg-white border border-slate-200 rounded-xl shadow-lg p-3 flex flex-col gap-2">
+                                  <p className="text-xs text-slate-700 font-medium">Delete this shift?</p>
+                                  <div className="flex gap-1.5">
+                                    <button
+                                      className="flex-1 py-1 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold transition-colors"
+                                      onClick={() => handleDelete(s._id)}
+                                    >
+                                      Delete
+                                    </button>
+                                    <button
+                                      className="flex-1 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium transition-colors"
+                                      onClick={() => setConfirmDeleteId(null)}
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           )}
                         </div>
                       </td>
