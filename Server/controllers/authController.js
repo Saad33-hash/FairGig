@@ -16,14 +16,26 @@ const buildAvatarUrl = (firstName, lastName = '') => {
 
 const createJwt = (user) =>
   jwt.sign(
-    {
-      id: user._id,
-      email: user.email,
-      role: user.role,
-    },
+    { id: user._id, email: user.email, role: user.role },
     process.env.JWT_SECRET,
+    { expiresIn: '15m' }
+  );
+
+const createRefreshToken = (user) =>
+  jwt.sign(
+    { id: user._id },
+    process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET + '_refresh',
     { expiresIn: '7d' }
   );
+
+const setRefreshCookie = (res, refreshToken) => {
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+};
 
 const getTransporter = () =>
   nodemailer.createTransport({
@@ -203,7 +215,9 @@ const login = async (req, res) => {
       return res.status(403).json({ message: 'Please verify your email first' });
     }
 
-    const token = createJwt(user);
+    const token        = createJwt(user);
+    const refreshToken = createRefreshToken(user);
+    setRefreshCookie(res, refreshToken);
 
     return res.json({ token, user: serializeUser(user) });
   } catch (error) {
@@ -239,7 +253,9 @@ const oauthSuccess = async (req, res) => {
       await user.save();
     }
 
-    const token = createJwt(user);
+    const token        = createJwt(user);
+    const refreshToken = createRefreshToken(user);
+    setRefreshCookie(res, refreshToken);
     return res.redirect(
       `${process.env.CLIENT_URL}/oauth/callback?token=${encodeURIComponent(token)}`
     );
@@ -261,10 +277,45 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
+const refresh = async (req, res) => {
+  try {
+    const token = req.cookies?.refreshToken;
+    if (!token) return res.status(401).json({ message: 'No refresh token' });
+
+    let payload;
+    try {
+      payload = jwt.verify(
+        token,
+        process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET + '_refresh'
+      );
+    } catch {
+      return res.status(401).json({ message: 'Refresh token expired or invalid' });
+    }
+
+    const user = await User.findById(payload.id);
+    if (!user) return res.status(401).json({ message: 'User not found' });
+
+    const newAccessToken  = createJwt(user);
+    const newRefreshToken = createRefreshToken(user);
+    setRefreshCookie(res, newRefreshToken);
+
+    return res.json({ token: newAccessToken });
+  } catch (err) {
+    return res.status(500).json({ message: err.message || 'Server error' });
+  }
+};
+
+const logoutUser = (_req, res) => {
+  res.clearCookie('refreshToken', { httpOnly: true, sameSite: 'lax' });
+  return res.json({ message: 'Logged out' });
+};
+
 module.exports = {
   signup,
   verifyEmail,
   login,
   oauthSuccess,
   getCurrentUser,
+  refresh,
+  logoutUser,
 };

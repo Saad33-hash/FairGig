@@ -1,16 +1,48 @@
-# React + Vite
+# FairGig — React Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React 19 + Vite + Tailwind CSS v4 frontend for the FairGig platform.
 
-Currently, two official plugins are available:
+## Start command
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+cd Client
+npm run dev
+```
 
-## React Compiler
+Frontend runs at `http://localhost:5173`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Requirements
 
-## Expanding the ESLint configuration
+```bash
+npm install
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Environment variables
+
+Create a `.env` file in this folder:
+```
+VITE_API_BASE_URL=http://localhost:5000/api
+```
+
+## Pages by role
+
+### Worker
+| Route | Page |
+|---|---|
+| `/app/worker/dashboard` | Analytics dashboard — earnings charts, city median |
+| `/app/worker/earnings` | Shift logger — add/edit/delete shifts, CSV import, screenshot upload |
+| `/app/worker/certificate` | Income certificate generator — date range picker, print |
+| `/app/grievances` | Grievance board — view and post complaints |
+
+### Verifier
+| Route | Page |
+|---|---|
+| `/app/verifier/queue` | Screenshot review queue — confirm/flag/mark unverifiable |
+| `/app/grievances` | Grievance board — read only |
+
+### Advocate
+| Route | Page |
+|---|---|
+| `/app/advocate/dashboard` | Analytics panel — commission trends, income distribution, vulnerability flags |
+| `/app/advocate/moderation` | Grievance moderation — tag, cluster, escalate complaints |
+| `/app/grievances` | Grievance board — read only |

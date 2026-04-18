@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const passport = require('passport');
 const mongoose = require('mongoose');
@@ -11,6 +12,9 @@ const authRoutes = require('./routes/authRoutes');
 const earningsRoutes = require('./routes/earningsRoutes');
 const verifierRoutes = require('./routes/verifierRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
+const advocateRoutes   = require('./routes/advocateRoutes');
+const grievanceRoutes    = require('./routes/grievanceRoutes');
+const certificateRoutes  = require('./routes/certificateRoutes');
 
 dotenv.config();
 
@@ -26,10 +30,11 @@ configurePassport(passport);
 app.use(
 	cors({
 		origin: process.env.CLIENT_URL || 'http://localhost:5173',
-		credentials: true,
+		credentials: true, // required for httpOnly refresh cookie
 	})
 );
 app.use(express.json());
+app.use(cookieParser());
 app.use(passport.initialize());
 
 // Serve uploaded screenshots as static files
@@ -49,6 +54,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/earnings', earningsRoutes);
 app.use('/api/verifier', verifierRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/advocate',   advocateRoutes);
+app.use('/api/grievances',  grievanceRoutes);
+app.use('/api/certificate', certificateRoutes);
 
 const startServer = async () => {
 	try {

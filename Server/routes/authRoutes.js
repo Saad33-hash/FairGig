@@ -7,12 +7,16 @@ const {
   login,
   oauthSuccess,
   getCurrentUser,
+  refresh,
+  logoutUser,
 } = require('../controllers/authController');
 
 const router = express.Router();
 
-router.post('/signup', signup);
-router.post('/login', login);
+router.post('/signup',  signup);
+router.post('/login',   login);
+router.post('/refresh', refresh);
+router.post('/logout',  logoutUser);
 router.get('/verify-email', verifyEmail);
 router.get('/me', authMiddleware, getCurrentUser);
 

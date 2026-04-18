@@ -7,6 +7,7 @@ export const API_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials: true, // send httpOnly refresh cookie on every request
 });
 
 export const setAuthToken = (token) => {
