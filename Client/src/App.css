@@ -1,6 +1,27 @@
 /* ── Toast ───────────────────────────────────────────────────────────────── */
-.app-toast      { border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 20px rgba(15,23,42,.07); background: #fff; }
-.app-toast-body { font-size: 14px; color: #0f172a; }
+.app-toast {
+	border-radius: 12px;
+	border: 1px solid #e2e8f0;
+	box-shadow: 0 4px 20px rgba(15, 23, 42, 0.07);
+	background: #fff;
+	color: #0f172a;
+	opacity: 1;
+}
+
+.app-toast-body {
+	font-size: 14px;
+	color: #0f172a;
+	opacity: 1;
+	font-weight: 500;
+}
+
+.app-toast .Toastify__toast-body,
+.app-toast .Toastify__toast-body > div,
+.app-toast .Toastify__close-button,
+.app-toast .Toastify__toast-icon {
+	color: #0f172a;
+	opacity: 1;
+}
 
 /* ── Status badge colour variants (applied conditionally in JSX) ─────────── */
 .badge-neutral  { background:#f1f5f9; border-color:#cbd5e1; color:#475569; }

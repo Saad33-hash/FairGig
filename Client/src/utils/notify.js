@@ -9,12 +9,12 @@ export const notifySuccess = (message) =>
   toast.success(message, {
     ...baseToast,
     style: {
-      background: 'var(--toast-success-bg)',
-      color: 'var(--toast-success-text)',
-      border: '1px solid var(--toast-success-border)',
+      background: '#ecfdf3',
+      color: '#334155',
+      border: '1px solid #86efac',
     },
     progressStyle: {
-      background: 'var(--success)',
+      background: '#16a34a',
     },
   });
 
@@ -22,11 +22,11 @@ export const notifyError = (message) =>
   toast.error(message, {
     ...baseToast,
     style: {
-      background: 'var(--toast-error-bg)',
-      color: 'var(--toast-error-text)',
-      border: '1px solid var(--toast-error-border)',
+      background: '#fef2f2',
+      color: '#334155',
+      border: '1px solid #fca5a5',
     },
     progressStyle: {
-      background: 'var(--toast-error-text)',
+      background: '#ef4444',
     },
   });
