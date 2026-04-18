@@ -49,6 +49,8 @@ export default function SignupPage() {
     <AuthLayout
       centered
       centeredWidthClass="max-w-xl"
+      centeredBackTo="/login"
+      centeredBackLabel="Back to Login"
       title="Join FairGig"
       subtitle="Choose your role, verify your email, and start building a fairer record of your work."
       footer={
@@ -61,18 +63,6 @@ export default function SignupPage() {
       }
     >
       <form className="flex flex-col gap-4 mt-6" onSubmit={handleSubmit}>
-        <div className="-mb-1">
-          <Link
-            to="/login"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors"
-          >
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-            Back to Login
-          </Link>
-        </div>
-
         {error && <div className="px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-800">{error}</div>}
 
         {/* Role selector */}

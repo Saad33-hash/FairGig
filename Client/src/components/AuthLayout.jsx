@@ -1,7 +1,33 @@
-export default function AuthLayout({ title, subtitle, sideTitle, sideCopy, points = [], children, footer, centered = false, centeredWidthClass = 'max-w-md' }) {
+import { Link } from 'react-router-dom'
+
+export default function AuthLayout({
+  title,
+  subtitle,
+  sideTitle,
+  sideCopy,
+  points = [],
+  children,
+  footer,
+  centered = false,
+  centeredWidthClass = 'max-w-md',
+  centeredBackTo,
+  centeredBackLabel = 'Back',
+}) {
   if (centered) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-slate-100">
+        {centeredBackTo ? (
+          <Link
+            to={centeredBackTo}
+            className="fixed top-5 left-5 z-30 inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 shadow-sm hover:border-blue-200 hover:text-blue-600 transition-colors"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+            {centeredBackLabel}
+          </Link>
+        ) : null}
+
         <div className={`w-full ${centeredWidthClass} overflow-hidden border border-slate-200/90 rounded-3xl bg-white shadow-[0_22px_55px_rgba(15,23,42,0.12)]`}>
           <section className="p-7 sm:p-8 bg-white">
             <div className="flex items-center gap-2.5 mb-8">
