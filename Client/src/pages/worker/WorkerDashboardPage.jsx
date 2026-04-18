@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   LineChart, Line, BarChart, Bar,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
 import Navbar from '../../components/Navbar';
 import { useAuth } from '../../hooks/useAuth';
@@ -11,7 +11,8 @@ function fmt(n) { return Number(n).toLocaleString('en-PK', { minimumFractionDigi
 
 function StatCard({ label, value, sub }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 px-6 py-5 flex flex-col gap-1">
+    <div className="group bg-white rounded-2xl border border-slate-200/90 px-6 py-5 flex flex-col gap-1 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-blue-200">
+      <div className="h-1.5 w-12 rounded-full bg-blue-200 mb-2 group-hover:bg-blue-500 transition-colors" />
       <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{label}</p>
       <p className="text-2xl font-bold text-slate-900">{value}</p>
       {sub && <p className="text-xs text-slate-500">{sub}</p>}
@@ -21,8 +22,8 @@ function StatCard({ label, value, sub }) {
 
 function SectionCard({ title, children }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col gap-4">
-      <h2 className="text-sm font-bold text-slate-900">{title}</h2>
+    <div className="bg-white rounded-2xl border border-slate-200/90 p-6 flex flex-col gap-4 shadow-sm">
+      <h2 className="text-sm font-bold tracking-wide text-slate-900">{title}</h2>
       {children}
     </div>
   );
@@ -34,7 +35,7 @@ const CustomTooltip = ({ active, payload, label }) => {
     <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-lg text-xs">
       <p className="font-semibold text-slate-700 mb-1">{label}</p>
       {payload.map((p) => (
-        <p key={p.name} style={{ color: p.color }}>
+        <p key={p.name} style={{ color: p.color }} className="font-medium">
           {p.name}: PKR {fmt(p.value)}
         </p>
       ))}
@@ -72,6 +73,7 @@ export default function WorkerDashboardPage() {
   const totalNet          = summary?.totalNet ?? 0;
   const avgHourlyRate     = summary?.avgHourlyRate ?? 0;
   const userName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || 'User';
+  const currentMonthLabel = new Date().toLocaleDateString('en-PK', { month: 'long', year: 'numeric' });
 
   const thisMonth = (() => {
     const key = new Date().toISOString().slice(0, 7);
@@ -88,13 +90,28 @@ export default function WorkerDashboardPage() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-100">
       <Navbar />
-      <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8 flex flex-col gap-6">
+      <main className="relative overflow-hidden flex-1 max-w-7xl mx-auto w-full px-6 py-8 flex flex-col gap-6">
 
-        <div className="rounded-2xl border border-blue-100 bg-linear-to-r from-blue-50 to-white px-6 py-6 shadow-sm">
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 leading-tight">
-            Welcome back, <span className="text-blue-700">{userName}</span>
-          </h1>
-          <p className="text-base sm:text-lg font-semibold text-slate-700 mt-2">Your earnings overview</p>
+        <div className="pointer-events-none absolute -top-24 -left-16 h-56 w-56 rounded-full bg-blue-100/60 blur-3xl" />
+        <div className="pointer-events-none absolute top-24 -right-20 h-64 w-64 rounded-full bg-slate-200/50 blur-3xl" />
+
+        <div className="relative rounded-2xl border border-blue-100 bg-linear-to-r from-blue-50 via-white to-slate-50 px-6 py-6 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div>
+              <span className="inline-flex items-center px-3 py-1 rounded-full border border-blue-200 bg-white text-xs font-semibold tracking-wide text-blue-700 uppercase">
+                Worker Dashboard
+              </span>
+              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 leading-tight mt-3">
+                Welcome back, <span className="text-blue-700">{userName}</span>
+              </h1>
+              <p className="text-base sm:text-lg font-semibold text-slate-700 mt-2">Your earnings overview</p>
+            </div>
+
+            <div className="self-start sm:self-auto px-4 py-2 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <p className="text-[11px] uppercase tracking-wide font-semibold text-slate-400">Reporting month</p>
+              <p className="text-sm font-bold text-slate-800 mt-0.5">{currentMonthLabel}</p>
+            </div>
+          </div>
         </div>
 
         {/* Stat cards */}
