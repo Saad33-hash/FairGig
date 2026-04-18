@@ -50,7 +50,7 @@ export default function Navbar() {
 
       {/* Brand */}
       <div className="flex items-center gap-2.5">
-        <div className="w-7 h-7 rounded-lg bg-blue-600 shrink-0" />
+        <img src="/favicon.svg" alt="FairGig logo" className="w-7 h-7 shrink-0" />
         <div>
           <p className="text-sm font-bold tracking-tight text-slate-900 leading-none">FairGig</p>
           <p className="text-[11px] text-slate-400 leading-none mt-0.5">Income &amp; Rights Platform</p>

@@ -31,7 +31,7 @@ export default function AuthLayout({
         <div className={`w-full ${centeredWidthClass} overflow-hidden border border-slate-200/90 rounded-3xl bg-white shadow-[0_22px_55px_rgba(15,23,42,0.12)]`}>
           <section className="p-7 sm:p-8 bg-white">
             <div className="flex items-center gap-2.5 mb-8">
-              <div className="w-8 h-8 rounded-lg bg-blue-600 shrink-0" />
+              <img src="/favicon.svg" alt="FairGig logo" className="w-8 h-8 shrink-0" />
               <span className="text-sm font-bold tracking-tight text-slate-900">FairGig</span>
             </div>
 
@@ -79,7 +79,7 @@ export default function AuthLayout({
           {/* ── Right form panel ── */}
           <section className="p-12 bg-white flex flex-col justify-center">
             <div className="flex items-center gap-2.5 mb-8">
-              <div className="w-8 h-8 rounded-lg bg-blue-600 shrink-0" />
+              <img src="/favicon.svg" alt="FairGig logo" className="w-8 h-8 shrink-0" />
               <span className="text-sm font-bold tracking-tight text-slate-900">FairGig</span>
             </div>
 
