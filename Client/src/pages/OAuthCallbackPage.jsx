@@ -38,9 +38,11 @@ export default function OAuthCallbackPage() {
   }, [loginWithToken, navigate, searchParams]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 text-center text-(--muted)">
-      <div className="max-w-sm rounded-3xl border border-(--border) bg-white px-6 py-8 shadow-(--shadow)">
-        {error || 'Completing your sign in...'}
+    <div className="flex min-h-screen items-center justify-center px-4 text-center bg-slate-100">
+      <div className="max-w-sm rounded-2xl border border-slate-200 bg-white px-6 py-8 shadow-sm text-sm text-slate-500">
+        {error
+          ? <span className="text-red-600 font-medium">{error}</span>
+          : 'Completing your sign in…'}
       </div>
     </div>
   );

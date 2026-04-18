@@ -1,3 +1,5 @@
+const path = require('path');
+const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -6,11 +8,17 @@ const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 const configurePassport = require('./config/passport');
 const authRoutes = require('./routes/authRoutes');
+const earningsRoutes = require('./routes/earningsRoutes');
+const verifierRoutes = require('./routes/verifierRoutes');
 
 dotenv.config();
 
 const app = express();
 const PORT = Number(process.env.PORT) || 5000;
+
+// Ensure uploads/screenshots directory exists
+const uploadsDir = path.join(__dirname, 'uploads', 'screenshots');
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 configurePassport(passport);
 
@@ -23,6 +31,9 @@ app.use(
 app.use(express.json());
 app.use(passport.initialize());
 
+// Serve uploaded screenshots as static files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 app.get('/api/health', (_req, res) => {
 	res.json({
 		status: 'ok',
@@ -34,6 +45,8 @@ app.get('/api/health', (_req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/earnings', earningsRoutes);
+app.use('/api/verifier', verifierRoutes);
 
 const startServer = async () => {
 	try {

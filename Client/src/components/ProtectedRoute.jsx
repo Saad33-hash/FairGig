@@ -2,7 +2,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 const ROLE_HOME = {
-  worker: '/app/worker/dashboard',
+  worker:   '/app/worker/dashboard',
   verifier: '/app/verifier/queue',
   advocate: '/app/advocate/dashboard',
 };
@@ -13,7 +13,7 @@ export default function ProtectedRoute({ children, allowedRoles }) {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-(--bg) text-sm text-(--muted)">
+      <div className="min-h-screen flex items-center justify-center bg-slate-100 text-sm text-slate-400">
         Verifying your session...
       </div>
     );

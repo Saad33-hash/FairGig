@@ -1,49 +1,48 @@
-export default function AuthLayout({
-  title,
-  subtitle,
-  sideTitle,
-  sideCopy,
-  points = [],
-  children,
-  footer,
-}) {
+export default function AuthLayout({ title, subtitle, sideTitle, sideCopy, points = [], children, footer }) {
   return (
-    <div className="auth-shell">
-      <div className="auth-card">
-        <div className="auth-card-grid">
-          <aside className="auth-side">
-            <div className="auth-side-badge">Secure access</div>
-            <h2 className="auth-side-title">{sideTitle}</h2>
-            <p className="auth-side-copy">{sideCopy}</p>
+    <div className="min-h-screen flex items-center justify-center p-8 bg-slate-100">
+      <div className="w-full max-w-5xl overflow-hidden border border-slate-200 rounded-3xl bg-white shadow-xl">
+        <div className="grid grid-cols-2">
 
-            <div className="auth-side-points">
+          {/* ── Left dark panel ── */}
+          <aside className="p-14 bg-slate-900 flex flex-col justify-center">
+            <span className="inline-flex items-center px-3 py-1.5 rounded-full border border-white/10 bg-white/5 text-slate-400 text-xs font-medium uppercase tracking-widest w-fit">
+              Secure access
+            </span>
+
+            <h2 className="mt-6 mb-3 text-3xl font-bold tracking-tight text-white leading-snug">
+              {sideTitle}
+            </h2>
+            <p className="mb-7 text-slate-400 text-sm leading-relaxed">{sideCopy}</p>
+
+            <div className="flex flex-col gap-2.5">
               {points.map((point) => (
-                <div key={point.title} className="auth-point">
-                  <div className="auth-point-dot" />
+                <div key={point.title} className="flex items-start gap-3 p-3.5 rounded-xl border border-white/[0.07] bg-white/[0.04]">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 mt-1 shrink-0" />
                   <div>
-                    <div className="auth-point-title">{point.title}</div>
-                    <div className="auth-point-copy">{point.copy}</div>
+                    <div className="text-sm font-semibold text-slate-200">{point.title}</div>
+                    <div className="text-xs text-slate-500 leading-relaxed mt-0.5">{point.copy}</div>
                   </div>
                 </div>
               ))}
             </div>
           </aside>
 
-          <section className="auth-form-panel">
-            <div className="auth-brand">
-              <div className="auth-brand-mark" />
-              <div className="auth-brand-text">FairGig</div>
+          {/* ── Right form panel ── */}
+          <section className="p-12 bg-white flex flex-col justify-center">
+            <div className="flex items-center gap-2.5 mb-8">
+              <div className="w-8 h-8 rounded-lg bg-blue-600 shrink-0" />
+              <span className="text-sm font-bold tracking-tight text-slate-900">FairGig</span>
             </div>
 
-            <header>
-              <h1 className="auth-heading">{title}</h1>
-              <p className="auth-subtitle">{subtitle}</p>
-            </header>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 leading-snug">{title}</h1>
+            <p className="mt-2 mb-0 text-sm text-slate-500 leading-relaxed">{subtitle}</p>
 
             {children}
 
-            {footer ? <div style={{ marginTop: '20px' }}>{footer}</div> : null}
+            {footer ? <div className="mt-5">{footer}</div> : null}
           </section>
+
         </div>
       </div>
     </div>
