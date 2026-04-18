@@ -47,15 +47,10 @@ export default function SignupPage() {
 
   return (
     <AuthLayout
+      centered
+      centeredWidthClass="max-w-xl"
       title="Join FairGig"
       subtitle="Choose your role, verify your email, and start building a fairer record of your work."
-      sideTitle="Income transparency for gig workers"
-      sideCopy="FairGig lets workers log and verify earnings across platforms, so they can prove income to landlords and banks — and spot when platforms aren't playing fair."
-      points={[
-        { title: 'Verified earnings', copy: 'Upload screenshots — a verifier confirms your records.' },
-        { title: 'Income certificate', copy: 'Generate a printable income summary for any date range.' },
-        { title: 'Community board', copy: 'Post grievances and see patterns other workers spotted.' },
-      ]}
       footer={
         <p className="text-sm text-slate-500">
           Already have an account?{' '}
@@ -65,32 +60,45 @@ export default function SignupPage() {
         </p>
       }
     >
-      <form className="flex flex-col gap-5 mt-8" onSubmit={handleSubmit}>
+      <form className="flex flex-col gap-4 mt-6" onSubmit={handleSubmit}>
+        <div className="-mb-1">
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+            Back to Login
+          </Link>
+        </div>
+
         {error && <div className="px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-800">{error}</div>}
 
         {/* Role selector */}
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">I am a</p>
-          <div className="flex flex-col gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             {ROLES.map((r) => (
               <button
                 key={r.value}
                 type="button"
                 onClick={() => handleRoleSelect(r.value)}
-                className={`w-full text-left px-4 py-3 rounded-xl border text-sm transition-colors ${
+                className={`w-full text-left px-3 py-2.5 rounded-xl border transition-colors ${
                   form.role === r.value
-                    ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500'
-                    : 'border-slate-200 bg-white hover:bg-slate-50'
+                    ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500 shadow-[0_6px_16px_rgba(37,99,235,0.16)]'
+                    : 'border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300'
                 }`}
               >
-                <span className={`block font-semibold ${form.role === r.value ? 'text-blue-700' : 'text-slate-900'}`}>{r.label}</span>
-                <span className="block text-xs text-slate-500 mt-0.5">{r.description}</span>
+                <span className={`block text-sm font-semibold leading-tight ${form.role === r.value ? 'text-blue-700' : 'text-slate-900'}`}>
+                  {r.label}
+                </span>
+                <span className="block text-[11px] text-slate-500 mt-1 leading-snug">{r.description}</span>
               </button>
             ))}
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3">
           <div>
             <label className="text-xs font-semibold uppercase tracking-wide text-slate-500" htmlFor="firstName">First name</label>
             <input className={inputCls} id="firstName" name="firstName" type="text" value={form.firstName} onChange={handleChange} placeholder="Saad" required />
@@ -107,7 +115,7 @@ export default function SignupPage() {
         </div>
 
         {form.role === 'worker' && (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3">
             <div>
               <label className="text-xs font-semibold uppercase tracking-wide text-slate-500" htmlFor="city">City</label>
               <select className={inputCls} id="city" name="city" value={form.city} onChange={handleChange} required>
@@ -125,7 +133,7 @@ export default function SignupPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3">
           <div>
             <label className="text-xs font-semibold uppercase tracking-wide text-slate-500" htmlFor="password">Password</label>
             <input className={inputCls} id="password" name="password" type="password" autoComplete="new-password" value={form.password} onChange={handleChange} placeholder="Min. 8 characters" required />

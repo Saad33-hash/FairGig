@@ -68,6 +68,18 @@ export default function LoginPage() {
       }
     >
       <form className="flex flex-col gap-4 mt-6" onSubmit={handleSubmit}>
+        <div className="-mb-1">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+            Back
+          </Link>
+        </div>
+
         {message && <div className="px-4 py-3 rounded-xl bg-green-50 border border-green-200 text-sm text-green-800">{message}</div>}
         {error && <div className="px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-800">{error}</div>}
 

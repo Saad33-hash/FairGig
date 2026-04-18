@@ -1,8 +1,8 @@
-export default function AuthLayout({ title, subtitle, sideTitle, sideCopy, points = [], children, footer, centered = false }) {
+export default function AuthLayout({ title, subtitle, sideTitle, sideCopy, points = [], children, footer, centered = false, centeredWidthClass = 'max-w-md' }) {
   if (centered) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-slate-100">
-        <div className="w-full max-w-md overflow-hidden border border-slate-200/90 rounded-3xl bg-white shadow-[0_22px_55px_rgba(15,23,42,0.12)]">
+        <div className={`w-full ${centeredWidthClass} overflow-hidden border border-slate-200/90 rounded-3xl bg-white shadow-[0_22px_55px_rgba(15,23,42,0.12)]`}>
           <section className="p-7 sm:p-8 bg-white">
             <div className="flex items-center gap-2.5 mb-8">
               <div className="w-8 h-8 rounded-lg bg-blue-600 shrink-0" />
