@@ -1,5 +1,40 @@
 const { parse } = require('csv-parse');
+const http = require('http');
 const Shift = require('../models/Shift');
+
+const ANOMALY_URL = process.env.ANOMALY_SERVICE_URL || 'http://localhost:8000';
+
+async function fetchAnomalies(workerId, shifts) {
+  const payload = JSON.stringify({
+    worker_id: workerId,
+    shifts: shifts.map((s) => ({
+      date:                 s.date.toISOString().split('T')[0],
+      platform:             s.platform,
+      gross_earned:         s.grossEarned,
+      platform_deductions:  s.platformDeductions,
+      net_received:         s.netReceived,
+      hours_worked:         s.hoursWorked,
+    })),
+  });
+
+  return new Promise((resolve) => {
+    const req = http.request(`${ANOMALY_URL}/detect`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) },
+    }, (res) => {
+      let body = '';
+      res.on('data', (chunk) => { body += chunk; });
+      res.on('end', () => {
+        try { resolve(JSON.parse(body)); }
+        catch { resolve(null); }
+      });
+    });
+    req.on('error', () => resolve(null));
+    req.setTimeout(3000, () => { req.destroy(); resolve(null); });
+    req.write(payload);
+    req.end();
+  });
+}
 
 const VALID_PLATFORMS = ['Careem', 'Bykea', 'Foodpanda', 'Upwork', 'Other'];
 const VALID_CATEGORIES = ['ride-hailing', 'food-delivery', 'freelance', 'domestic'];
@@ -61,7 +96,18 @@ const getShifts = async (req, res) => {
       Shift.countDocuments(filter),
     ]);
 
-    return res.json({ shifts, total, page: Number(page), pages: Math.ceil(total / Number(limit)) });
+    // Call anomaly service with all shifts for this worker (non-blocking — fails silently)
+    const allShifts = await Shift.find({ workerId: req.user.id });
+    const anomalyResult = await fetchAnomalies(req.user.id, allShifts);
+
+    return res.json({
+      shifts,
+      total,
+      page: Number(page),
+      pages: Math.ceil(total / Number(limit)),
+      anomalies: anomalyResult?.anomalies ?? [],
+      anomalySummary: anomalyResult?.summary ?? null,
+    });
   } catch (err) {
     return res.status(500).json({ message: err.message || 'Server error' });
   }

@@ -175,6 +175,8 @@ export default function EarningsPage() {
   const [filterTo, setFilterTo]         = useState('');
   const [uploadingId, setUploadingId]   = useState(null);
   const [csvLoading, setCsvLoading]     = useState(false);
+  const [anomalies, setAnomalies]       = useState([]);
+  const [anomalySummary, setAnomalySummary] = useState(null);
   const csvRef          = useRef(null);
   const screenshotRefs  = useRef({});
 
@@ -187,6 +189,8 @@ export default function EarningsPage() {
       if (filterTo)       params.to       = filterTo;
       const { data } = await api.get('/earnings/shifts', { params });
       setShifts(data.shifts); setTotal(data.total); setPage(p);
+      setAnomalies(data.anomalies ?? []);
+      setAnomalySummary(data.anomalySummary ?? null);
     } catch { notifyError('Failed to load shifts'); }
     finally { setLoading(false); }
   };
@@ -251,6 +255,26 @@ export default function EarningsPage() {
             </button>
           </div>
         </div>
+
+        {/* Anomaly banner */}
+        {anomalies.length > 0 && (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-amber-600 font-bold text-sm">⚠ {anomalySummary}</span>
+            </div>
+            <div className="flex flex-col gap-2">
+              {anomalies.map((a, i) => (
+                <div key={i} className="flex items-start gap-3 bg-white rounded-xl border border-amber-100 px-4 py-3">
+                  <span className={`mt-0.5 shrink-0 inline-block w-2 h-2 rounded-full ${a.severity === 'high' ? 'bg-red-500' : a.severity === 'medium' ? 'bg-amber-400' : 'bg-slate-400'}`} />
+                  <div>
+                    <p className="text-xs font-semibold text-slate-700 capitalize">{a.type.replace(/_/g, ' ')} · {a.shift_date}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{a.explanation}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Filters */}
         <div className="flex items-center gap-2 flex-wrap">

@@ -10,6 +10,7 @@ const configurePassport = require('./config/passport');
 const authRoutes = require('./routes/authRoutes');
 const earningsRoutes = require('./routes/earningsRoutes');
 const verifierRoutes = require('./routes/verifierRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
 
 dotenv.config();
 
@@ -47,6 +48,7 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/earnings', earningsRoutes);
 app.use('/api/verifier', verifierRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 const startServer = async () => {
 	try {
