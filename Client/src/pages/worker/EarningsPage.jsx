@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import Navbar from '../../components/Navbar';
+import WorkerLayout from '../../components/WorkerLayout';
 import { api } from '../../utils/api';
 import { notifyError, notifySuccess } from '../../utils/notify';
 
@@ -239,9 +239,8 @@ export default function EarningsPage() {
   const pages = Math.ceil(total / 15);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-100">
-      <Navbar />
-      <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8 flex flex-col gap-6">
+    <WorkerLayout>
+      <main className="max-w-7xl mx-auto w-full px-6 py-8 flex flex-col gap-6">
 
         {/* Header */}
         <div className="flex items-start justify-between">
@@ -416,6 +415,6 @@ export default function EarningsPage() {
       {screenshotShiftId && (
         <ScreenshotModal shiftId={screenshotShiftId} onClose={() => setScreenshotShiftId(null)} />
       )}
-    </div>
+    </WorkerLayout>
   );
 }

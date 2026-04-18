@@ -3,7 +3,7 @@ import {
   LineChart, Line, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
-import Navbar from '../../components/Navbar';
+import WorkerLayout from '../../components/WorkerLayout';
 import { useAuth } from '../../hooks/useAuth';
 import { api } from '../../utils/api';
 
@@ -61,10 +61,9 @@ export default function WorkerDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col bg-slate-100">
-        <Navbar />
-        <div className="flex-1 flex items-center justify-center text-sm text-slate-400">Loading dashboard…</div>
-      </div>
+      <WorkerLayout>
+        <div className="min-h-[60vh] flex items-center justify-center text-sm text-slate-400">Loading dashboard…</div>
+      </WorkerLayout>
     );
   }
 
@@ -88,9 +87,8 @@ export default function WorkerDashboardPage() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-100">
-      <Navbar />
-      <main className="relative overflow-hidden flex-1 max-w-7xl mx-auto w-full px-6 py-8 flex flex-col gap-6">
+    <WorkerLayout>
+      <main className="relative overflow-hidden max-w-7xl mx-auto w-full px-6 py-8 flex flex-col gap-6">
 
         <div className="pointer-events-none absolute -top-24 -left-16 h-56 w-56 rounded-full bg-blue-100/60 blur-3xl" />
         <div className="pointer-events-none absolute top-24 -right-20 h-64 w-64 rounded-full bg-slate-200/50 blur-3xl" />
@@ -214,6 +212,6 @@ export default function WorkerDashboardPage() {
         </div>
 
       </main>
-    </div>
+    </WorkerLayout>
   );
 }

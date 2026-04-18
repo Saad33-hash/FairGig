@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Navbar from '../../components/Navbar';
+import WorkerLayout from '../../components/WorkerLayout';
 import { useAuth } from '../../hooks/useAuth';
 import { notifyError } from '../../utils/notify';
 
@@ -54,9 +54,8 @@ export default function CertificatePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-100">
-      <Navbar />
-      <main className="flex-1 max-w-5xl mx-auto w-full px-6 py-8 flex flex-col gap-6">
+    <WorkerLayout>
+      <main className="max-w-5xl mx-auto w-full px-6 py-8 flex flex-col gap-6">
 
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Income Certificate</h1>
@@ -115,6 +114,6 @@ export default function CertificatePage() {
         )}
 
       </main>
-    </div>
+    </WorkerLayout>
   );
 }
