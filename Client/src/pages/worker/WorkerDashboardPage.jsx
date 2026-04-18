@@ -4,6 +4,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
 import Navbar from '../../components/Navbar';
+import { useAuth } from '../../hooks/useAuth';
 import { api } from '../../utils/api';
 
 function fmt(n) { return Number(n).toLocaleString('en-PK', { minimumFractionDigits: 0 }); }
@@ -42,6 +43,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export default function WorkerDashboardPage() {
+  const { user }              = useAuth();
   const [summary, setSummary]   = useState(null);
   const [median, setMedian]     = useState(null);
   const [loading, setLoading]   = useState(true);
@@ -69,6 +71,7 @@ export default function WorkerDashboardPage() {
   const platformBreakdown = summary?.platformBreakdown ?? [];
   const totalNet          = summary?.totalNet ?? 0;
   const avgHourlyRate     = summary?.avgHourlyRate ?? 0;
+  const userName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || 'User';
 
   const thisMonth = (() => {
     const key = new Date().toISOString().slice(0, 7);
@@ -87,9 +90,11 @@ export default function WorkerDashboardPage() {
       <Navbar />
       <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8 flex flex-col gap-6">
 
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-          <p className="text-sm text-slate-500 mt-1">Your earnings overview</p>
+        <div className="rounded-2xl border border-blue-100 bg-linear-to-r from-blue-50 to-white px-6 py-6 shadow-sm">
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 leading-tight">
+            Welcome back, <span className="text-blue-700">{userName}</span>
+          </h1>
+          <p className="text-base sm:text-lg font-semibold text-slate-700 mt-2">Your earnings overview</p>
         </div>
 
         {/* Stat cards */}
