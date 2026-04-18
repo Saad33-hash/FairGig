@@ -20,6 +20,7 @@ import AdvocateDashboardPage from './pages/advocate/AdvocateDashboardPage';
 import AdvocateModerationPage from './pages/advocate/AdvocateModerationPage';
 
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import ChatWidget from './components/ChatWidget';
 
 const ROLE_HOME = {
   worker:   '/app/worker/dashboard',
@@ -54,45 +55,37 @@ function HomeRoute() {
 }
 
 function App() {
+  const { user } = useAuth();
+
   return (
-    <Routes>
-      <Route path="/" element={<HomeRoute />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
-      <Route path="/oauth/callback" element={<OAuthCallbackPage />} />
+    <>
+      <Routes>
+        <Route path="/" element={<HomeRoute />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/oauth/callback" element={<OAuthCallbackPage />} />
 
-      {/* Role-based entry point */}
-      <Route
-        path="/app"
-        element={<ProtectedRoute><RoleRedirect /></ProtectedRoute>}
-      />
+        <Route path="/app" element={<ProtectedRoute><RoleRedirect /></ProtectedRoute>} />
+        <Route path="/app/pending" element={<ProtectedRoute><PendingApprovalPage /></ProtectedRoute>} />
 
-      {/* Pending / rejected holding screen */}
-      <Route
-        path="/app/pending"
-        element={<ProtectedRoute><PendingApprovalPage /></ProtectedRoute>}
-      />
+        <Route path="/app/worker/dashboard"  element={<ProtectedRoute allowedRoles={['worker']}><WorkerDashboardPage /></ProtectedRoute>} />
+        <Route path="/app/worker/earnings"   element={<ProtectedRoute allowedRoles={['worker']}><EarningsPage /></ProtectedRoute>} />
+        <Route path="/app/worker/certificate" element={<ProtectedRoute allowedRoles={['worker']}><CertificatePage /></ProtectedRoute>} />
 
-      {/* Worker */}
-      <Route path="/app/worker/dashboard" element={<ProtectedRoute allowedRoles={['worker']}><WorkerDashboardPage /></ProtectedRoute>} />
-      <Route path="/app/worker/earnings"   element={<ProtectedRoute allowedRoles={['worker']}><EarningsPage /></ProtectedRoute>} />
-      <Route path="/app/worker/certificate" element={<ProtectedRoute allowedRoles={['worker']}><CertificatePage /></ProtectedRoute>} />
+        <Route path="/app/verifier/queue" element={<ProtectedRoute allowedRoles={['verifier']}><VerifierQueuePage /></ProtectedRoute>} />
 
-      {/* Verifier */}
-      <Route path="/app/verifier/queue" element={<ProtectedRoute allowedRoles={['verifier']}><VerifierQueuePage /></ProtectedRoute>} />
+        <Route path="/app/advocate/dashboard"  element={<ProtectedRoute allowedRoles={['advocate']}><AdvocateDashboardPage /></ProtectedRoute>} />
+        <Route path="/app/advocate/moderation" element={<ProtectedRoute allowedRoles={['advocate']}><AdvocateModerationPage /></ProtectedRoute>} />
 
-      {/* Advocate */}
-      <Route path="/app/advocate/dashboard"   element={<ProtectedRoute allowedRoles={['advocate']}><AdvocateDashboardPage /></ProtectedRoute>} />
-      <Route path="/app/advocate/moderation"  element={<ProtectedRoute allowedRoles={['advocate']}><AdvocateModerationPage /></ProtectedRoute>} />
+        <Route path="/app/admin/dashboard" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboardPage /></ProtectedRoute>} />
 
-      {/* Admin */}
-      <Route path="/app/admin/dashboard" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboardPage /></ProtectedRoute>} />
+        <Route path="/app/grievances" element={<ProtectedRoute><GrievanceBoardPage /></ProtectedRoute>} />
 
-      {/* Shared — all authenticated roles */}
-      <Route path="/app/grievances" element={<ProtectedRoute><GrievanceBoardPage /></ProtectedRoute>} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+      {user && <ChatWidget />}
+    </>
   );
 }
 

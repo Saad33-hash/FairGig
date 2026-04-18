@@ -16,6 +16,7 @@ const advocateRoutes   = require('./routes/advocateRoutes');
 const grievanceRoutes    = require('./routes/grievanceRoutes');
 const certificateRoutes  = require('./routes/certificateRoutes');
 const adminRoutes        = require('./routes/adminRoutes');
+const chatRoutes         = require('./routes/chatRoutes');
 
 dotenv.config();
 
@@ -59,6 +60,7 @@ app.use('/api/advocate',   advocateRoutes);
 app.use('/api/grievances',  grievanceRoutes);
 app.use('/api/certificate', certificateRoutes);
 app.use('/api/admin',       adminRoutes);
+app.use('/api/chat',        chatRoutes);
 
 const startServer = async () => {
 	try {
