@@ -175,8 +175,9 @@ export default function EarningsPage() {
   const [filterTo, setFilterTo]         = useState('');
   const [uploadingId, setUploadingId]   = useState(null);
   const [csvLoading, setCsvLoading]     = useState(false);
-  const [anomalies, setAnomalies]       = useState([]);
+  const [anomalies, setAnomalies]           = useState([]);
   const [anomalySummary, setAnomalySummary] = useState(null);
+  const [aiInsight, setAiInsight]           = useState(null);
   const csvRef          = useRef(null);
   const screenshotRefs  = useRef({});
 
@@ -191,6 +192,7 @@ export default function EarningsPage() {
       setShifts(data.shifts); setTotal(data.total); setPage(p);
       setAnomalies(data.anomalies ?? []);
       setAnomalySummary(data.anomalySummary ?? null);
+      setAiInsight(data.aiInsight ?? null);
     } catch { notifyError('Failed to load shifts'); }
     finally { setLoading(false); }
   };
@@ -257,6 +259,17 @@ export default function EarningsPage() {
             </button>
           </div>
         </div>
+
+        {/* AI Insight */}
+        {aiInsight && (
+          <div className="rounded-2xl border border-blue-200 bg-blue-50 px-5 py-4 flex gap-3">
+            <span className="text-blue-500 text-lg mt-0.5">✦</span>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-blue-500 mb-1">AI Earnings Insight</p>
+              <p className="text-sm text-slate-700 leading-relaxed">{aiInsight}</p>
+            </div>
+          </div>
+        )}
 
         {/* Anomaly banner */}
         {anomalies.length > 0 && (

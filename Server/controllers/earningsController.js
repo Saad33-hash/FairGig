@@ -1,6 +1,13 @@
 const { parse } = require('csv-parse');
 const http = require('http');
+const Groq = require('groq-sdk');
 const Shift = require('../models/Shift');
+
+let groq = null;
+const getGroq = () => {
+  if (!groq && process.env.GROQ_API_KEY) groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+  return groq;
+};
 
 const ANOMALY_URL = process.env.ANOMALY_SERVICE_URL || 'http://localhost:8000';
 
@@ -34,6 +41,59 @@ async function fetchAnomalies(workerId, shifts) {
     req.write(payload);
     req.end();
   });
+}
+
+async function fetchAiInsight(shifts, anomalies) {
+  if (!process.env.GROQ_API_KEY || shifts.length === 0) return null;
+    const groq = getGroq();
+    if (!groq) return null;
+
+  try {
+    const totalGross    = shifts.reduce((s, x) => s + x.grossEarned, 0);
+    const totalNet      = shifts.reduce((s, x) => s + x.netReceived, 0);
+    const totalHours    = shifts.reduce((s, x) => s + x.hoursWorked, 0);
+    const avgDeductRate = totalGross > 0 ? ((totalGross - totalNet) / totalGross * 100).toFixed(1) : 0;
+
+    const platformStats = {};
+    for (const s of shifts) {
+      if (!platformStats[s.platform]) platformStats[s.platform] = { gross: 0, net: 0, count: 0 };
+      platformStats[s.platform].gross += s.grossEarned;
+      platformStats[s.platform].net   += s.netReceived;
+      platformStats[s.platform].count += 1;
+    }
+    const platformSummary = Object.entries(platformStats)
+      .map(([p, v]) => `${p}: ${v.count} shifts, avg deduction ${v.gross > 0 ? ((v.gross - v.net) / v.gross * 100).toFixed(1) : 0}%`)
+      .join('; ');
+
+    const anomalySummary = anomalies && anomalies.length > 0
+      ? anomalies.map((a) => `${a.type} on ${a.shift_date}: ${a.explanation}`).join('\n')
+      : 'No anomalies detected.';
+
+    const prompt = `You are a financial advisor for gig workers in Pakistan. Analyze this worker's earnings data and write a short, friendly 3-4 sentence plain-English insight report. Be specific with numbers. Suggest one actionable recommendation at the end.
+
+Earnings summary (${shifts.length} shifts):
+- Total gross: PKR ${totalGross.toLocaleString()}
+- Total net received: PKR ${totalNet.toLocaleString()}
+- Total hours worked: ${totalHours}
+- Average deduction rate: ${avgDeductRate}%
+- By platform: ${platformSummary}
+
+Anomalies detected:
+${anomalySummary}
+
+Write the report directly without any heading or intro like "Here is your report".`;
+
+    const completion = await groq.chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 200,
+      temperature: 0.7,
+    });
+
+    return completion.choices[0]?.message?.content?.trim() || null;
+  } catch {
+    return null;
+  }
 }
 
 const VALID_PLATFORMS = ['Careem', 'Bykea', 'Foodpanda', 'Upwork', 'Other'];
@@ -96,17 +156,19 @@ const getShifts = async (req, res) => {
       Shift.countDocuments(filter),
     ]);
 
-    // Call anomaly service with all shifts for this worker (non-blocking — fails silently)
     const allShifts = await Shift.find({ workerId: req.user.id });
-    const anomalyResult = await fetchAnomalies(req.user.id, allShifts);
+    const anomalyResult  = await fetchAnomalies(req.user.id, allShifts);
+    const finalAnomalies = anomalyResult?.anomalies ?? [];
+    const insight        = await fetchAiInsight(allShifts, finalAnomalies);
 
     return res.json({
       shifts,
       total,
       page: Number(page),
       pages: Math.ceil(total / Number(limit)),
-      anomalies: anomalyResult?.anomalies ?? [],
+      anomalies: finalAnomalies,
       anomalySummary: anomalyResult?.summary ?? null,
+      aiInsight: insight,
     });
   } catch (err) {
     return res.status(500).json({ message: err.message || 'Server error' });
