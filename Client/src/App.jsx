@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import OAuthCallbackPage from './pages/OAuthCallbackPage';
 import GrievanceBoardPage from './pages/GrievanceBoardPage';
+import LandingPage from './pages/LandingPage';
 
 import WorkerDashboardPage from './pages/worker/WorkerDashboardPage';
 import EarningsPage from './pages/worker/EarningsPage';
@@ -28,10 +29,20 @@ function RoleRedirect() {
   return <Navigate to={ROLE_HOME[user?.role] ?? '/login'} replace />;
 }
 
+function HomeRoute() {
+  const { token, user } = useAuth();
+
+  if (token && user) {
+    return <Navigate to={ROLE_HOME[user.role] ?? '/app'} replace />;
+  }
+
+  return <LandingPage />;
+}
+
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<HomeRoute />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/oauth/callback" element={<OAuthCallbackPage />} />
@@ -57,7 +68,7 @@ function App() {
       {/* Shared — all authenticated roles */}
       <Route path="/app/grievances" element={<ProtectedRoute><GrievanceBoardPage /></ProtectedRoute>} />
 
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
