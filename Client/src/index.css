@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap');
+@import 'tailwindcss';
+
+:root {
+  /* Base */
+  --bg:             #f0f4f8;
+  --surface:        #ffffff;
+  --surface-muted:  #f8fafc;
+
+  /* Text */
+  --text:           #0f172a;
+  --muted:          #64748b;
+
+  /* Borders */
+  --border:         #e2e8f0;
+  --border-strong:  #94a3b8;
+
+  /* Brand */
+  --accent:         #2563eb;
+  --accent-hover:   #1d4ed8;
+  --accent-bg:      #eff6ff;
+
+  /* Semantic */
+  --success:        #15803d;
+  --toast-success-bg:     #f0fdf4;
+  --toast-success-border: #86efac;
+  --toast-success-text:   #166534;
+  --toast-error-bg:       #fef2f2;
+  --toast-error-border:   #fca5a5;
+  --toast-error-text:     #991b1b;
+
+  /* Elevation */
+  --shadow:      0 20px 60px rgba(15, 23, 42, 0.10);
+  --shadow-soft: 0 4px 20px rgba(15, 23, 42, 0.07);
+
+  /* Radii */
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-sm: 10px;
+
+  /* Font */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+html {
+  color: var(--text);
+  background: var(--bg);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-toast {
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+  background: #ffffff;
+}
+
+.app-toast-body {
+  font-size: 14px;
+  color: var(--text);
+}

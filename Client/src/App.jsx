@@ -1,0 +1,65 @@
+import { Navigate, Route, Routes } from 'react-router-dom';
+import './App.css';
+import ProtectedRoute from './components/ProtectedRoute';
+import { useAuth } from './hooks/useAuth';
+
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import OAuthCallbackPage from './pages/OAuthCallbackPage';
+import GrievanceBoardPage from './pages/GrievanceBoardPage';
+
+import WorkerDashboardPage from './pages/worker/WorkerDashboardPage';
+import EarningsPage from './pages/worker/EarningsPage';
+import CertificatePage from './pages/worker/CertificatePage';
+
+import VerifierQueuePage from './pages/verifier/VerifierQueuePage';
+
+import AdvocateDashboardPage from './pages/advocate/AdvocateDashboardPage';
+import AdvocateModerationPage from './pages/advocate/AdvocateModerationPage';
+
+const ROLE_HOME = {
+  worker: '/app/worker/dashboard',
+  verifier: '/app/verifier/queue',
+  advocate: '/app/advocate/dashboard',
+};
+
+function RoleRedirect() {
+  const { user } = useAuth();
+  return <Navigate to={ROLE_HOME[user?.role] ?? '/login'} replace />;
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
+      <Route path="/oauth/callback" element={<OAuthCallbackPage />} />
+
+      {/* Role-based entry point */}
+      <Route
+        path="/app"
+        element={<ProtectedRoute><RoleRedirect /></ProtectedRoute>}
+      />
+
+      {/* Worker */}
+      <Route path="/app/worker/dashboard" element={<ProtectedRoute allowedRoles={['worker']}><WorkerDashboardPage /></ProtectedRoute>} />
+      <Route path="/app/worker/earnings"   element={<ProtectedRoute allowedRoles={['worker']}><EarningsPage /></ProtectedRoute>} />
+      <Route path="/app/worker/certificate" element={<ProtectedRoute allowedRoles={['worker']}><CertificatePage /></ProtectedRoute>} />
+
+      {/* Verifier */}
+      <Route path="/app/verifier/queue" element={<ProtectedRoute allowedRoles={['verifier']}><VerifierQueuePage /></ProtectedRoute>} />
+
+      {/* Advocate */}
+      <Route path="/app/advocate/dashboard"   element={<ProtectedRoute allowedRoles={['advocate']}><AdvocateDashboardPage /></ProtectedRoute>} />
+      <Route path="/app/advocate/moderation"  element={<ProtectedRoute allowedRoles={['advocate']}><AdvocateModerationPage /></ProtectedRoute>} />
+
+      {/* Shared — all authenticated roles */}
+      <Route path="/app/grievances" element={<ProtectedRoute><GrievanceBoardPage /></ProtectedRoute>} />
+
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
+  );
+}
+
+export default App;
