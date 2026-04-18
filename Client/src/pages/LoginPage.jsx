@@ -55,15 +55,9 @@ export default function LoginPage() {
 
   return (
     <AuthLayout
+      centered
       title="Welcome back"
       subtitle="Sign in with email or a trusted provider. Verified users go straight to the workspace."
-      sideTitle="A quiet, professional sign in surface"
-      sideCopy="Minimal layout, precise spacing, and strong visual hierarchy keep the experience focused on access and account state."
-      points={[
-        { title: 'Verified accounts', copy: 'Email verification is required before password login.' },
-        { title: 'OAuth ready', copy: 'Use Google for a faster sign in path.' },
-        { title: 'Consistent theme', copy: 'One root palette drives the entire interface.' },
-      ]}
       footer={
         <p className="text-sm text-slate-500">
           New here?{' '}
@@ -73,7 +67,7 @@ export default function LoginPage() {
         </p>
       }
     >
-      <form className="flex flex-col gap-5 mt-8" onSubmit={handleSubmit}>
+      <form className="flex flex-col gap-4 mt-6" onSubmit={handleSubmit}>
         {message && <div className="px-4 py-3 rounded-xl bg-green-50 border border-green-200 text-sm text-green-800">{message}</div>}
         {error && <div className="px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-800">{error}</div>}
 
