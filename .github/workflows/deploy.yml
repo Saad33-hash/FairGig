@@ -1,0 +1,128 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: true
+
+jobs:
+  # ── Job 1: Validate the build before touching the server ─────────────────
+  build-check:
+    name: Build Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: Client/package-lock.json
+
+      - name: Install Client dependencies
+        working-directory: Client
+        run: npm ci
+
+      - name: Build Client
+        working-directory: Client
+        run: npm run build
+        env:
+          VITE_API_BASE_URL: https://vircosa.com/api
+
+  # ── Job 2: Deploy to Oracle Cloud (only after build passes) ──────────────
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: build-check
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to server
+        run: |
+          ssh -i ~/.ssh/deploy_key ubuntu@${{ secrets.SSH_HOST }} << 'ENDSSH'
+            set -e
+
+            echo "──────────────────────────────────────"
+            echo "  FairGig Deploy — $(date)"
+            echo "──────────────────────────────────────"
+
+            cd /var/www/FairGig
+
+            # ── Pull latest code ──────────────────────────────────────────
+            echo "[1/6] Pulling latest code..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            # ── Server dependencies ───────────────────────────────────────
+            echo "[2/6] Installing server dependencies..."
+            cd /var/www/FairGig/Server
+            npm ci --omit=dev
+
+            # ── Build frontend ────────────────────────────────────────────
+            echo "[3/6] Building frontend..."
+            cd /var/www/FairGig/Client
+            npm ci
+            VITE_API_BASE_URL=https://vircosa.com/api npm run build
+
+            # ── Copy build to nginx web root ──────────────────────────────
+            echo "[4/6] Copying build to web root..."
+            sudo rm -rf /var/www/html/faircig
+            sudo cp -r /var/www/FairGig/Client/dist /var/www/html/faircig
+
+            # ── Python services ───────────────────────────────────────────
+            echo "[5/6] Updating Python dependencies..."
+            cd /var/www/FairGig/anomaly-service
+            pip install -r requirements.txt -q
+
+            cd /var/www/FairGig/analytics-service
+            pip install -r requirements.txt -q
+
+            # ── Restart Node server via pm2 ───────────────────────────────
+            echo "[6/6] Restarting Node server..."
+            cd /var/www/FairGig/Server
+            pm2 restart fairgig
+            pm2 restart analytics-service
+            pm2 restart anomaly-service
+            pm2 save
+
+            echo "──────────────────────────────────────"
+            echo "  Deploy complete!"
+            echo "──────────────────────────────────────"
+            pm2 status
+          ENDSSH
+
+      - name: Health check
+        run: |
+          echo "Waiting for server to come up..."
+          sleep 8
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://vircosa.com/api/health)
+          echo "Health check status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "Health check FAILED — server returned $STATUS"
+            exit 1
+          fi
+          echo "Health check passed!"
+
+      - name: Notify success
+        if: success()
+        run: echo "Deployment to vircosa.com succeeded."
+
+      - name: Notify failure
+        if: failure()
+        run: echo "Deployment FAILED. Check logs above."
