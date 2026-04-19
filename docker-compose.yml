@@ -1,0 +1,58 @@
+version: '3.9'
+
+services:
+
+  # ── React frontend (nginx) ──────────────────────────────────────────────────
+  client:
+    build:
+      context: ./Client
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:5000/api
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+    restart: unless-stopped
+
+  # ── Node.js API server ──────────────────────────────────────────────────────
+  server:
+    build:
+      context: ./Server
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./Server/.env
+    environment:
+      ANOMALY_SERVICE_URL: http://anomaly-service:8000
+      ANALYTICS_SERVICE_URL: http://analytics-service:8001
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      - anomaly-service
+      - analytics-service
+    restart: unless-stopped
+
+  # ── Anomaly detection (FastAPI) ─────────────────────────────────────────────
+  anomaly-service:
+    build:
+      context: ./anomaly-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  # ── Analytics service (FastAPI) ─────────────────────────────────────────────
+  analytics-service:
+    build:
+      context: ./analytics-service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./Server/.env
+    restart: unless-stopped
+
+volumes:
+  uploads:

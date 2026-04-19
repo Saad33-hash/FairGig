@@ -80,7 +80,7 @@ export default function AuthLayout({
           <section className="p-12 bg-white flex flex-col justify-center">
             <div className="flex items-center gap-2.5 mb-8">
               <img src="/favicon.svg" alt="FairGig logo" className="w-8 h-8 shrink-0" />
-              <span className="text-sm font-bold tracking-tight text-slate-900">FairGig</span>
+              <span className="text-sm font-bold tracking-tight text-slate-900">DUMMY CHANGE</span>
             </div>
 
             <h1 className="text-2xl font-bold tracking-tight text-slate-900 leading-snug">{title}</h1>

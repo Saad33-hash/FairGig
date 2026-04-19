@@ -84,7 +84,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => { fetchMe(); }, [token]);
 
-  const loginWithToken = async (nextToken) => { saveToken(nextToken); };
+  const loginWithToken = async (nextToken) => { setLoading(true); saveToken(nextToken); };
 
   const logout = async () => {
     try { await api.post('/auth/logout'); } catch { /* ignore */ }

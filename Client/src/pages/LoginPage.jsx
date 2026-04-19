@@ -14,7 +14,6 @@ export default function LoginPage() {
   const [searchParams] = useSearchParams();
   const { loginWithToken, token, user } = useAuth();
   const [form, setForm] = useState(initialState);
-  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const toastNoticeShown = useRef(false);
@@ -32,8 +31,8 @@ export default function LoginPage() {
   useEffect(() => {
     if (notice && !toastNoticeShown.current) {
       toastNoticeShown.current = true;
-      if (notice.type === 'success') { notifySuccess(notice.text); setMessage(notice.text); }
-      else { notifyError(notice.text); setError(notice.text); }
+      if (notice.type === 'success') { notifySuccess(notice.text); }
+      else { notifyError(notice.text); }
     }
   }, [notice]);
 
@@ -41,7 +40,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); setMessage(''); setLoading(true);
+    setError(''); setLoading(true);
     try {
       const { data } = await api.post('/auth/login', form);
       await loginWithToken(data.token);
@@ -70,7 +69,6 @@ export default function LoginPage() {
       }
     >
       <form className="flex flex-col gap-4 mt-6" onSubmit={handleSubmit}>
-        {message && <div className="px-4 py-3 rounded-xl bg-green-50 border border-green-200 text-sm text-green-800">{message}</div>}
         {error && <div className="px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-800">{error}</div>}
 
         <div>
