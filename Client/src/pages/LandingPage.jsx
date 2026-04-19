@@ -589,22 +589,8 @@ function CTASection() {
 function Footer() {
   return (
     <footer className="landing-footer">
-      <div className="landing-shell footer-row">
-        <a href="#top" className="logo-mark" aria-label="FairGig home">
-          <span style={{ color: COLORS.blue2 }}>Fair</span>Gig
-        </a>
-
-        <nav className="footer-links" aria-label="Footer links">
-          {NAV_LINKS.map((item) => {
-            return (
-              <a key={item.label} href={item.href}>
-                {item.label}
-              </a>
-            )
-          })}
-        </nav>
-
-        <small>Copyright 2026 FairGig x SOFTEC, FAST-NU Lahore.</small>
+      <div className="landing-shell" style={{ textAlign: 'center' }}>
+        <small>© 2026 FairGig · Built for SOFTEC, FAST-NU Lahore. All rights reserved.</small>
       </div>
     </footer>
   )
