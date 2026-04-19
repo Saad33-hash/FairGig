@@ -4,7 +4,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend,
 } from 'recharts';
-import Navbar from '../../components/Navbar';
+import AdvocateLayout from '../../components/AdvocateLayout';
 import { useAuth } from '../../hooks/useAuth';
 import { api } from '../../utils/api';
 
@@ -74,10 +74,9 @@ export default function AdvocateDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col bg-slate-100">
-        <Navbar />
-        <div className="flex-1 flex items-center justify-center text-sm text-slate-400">Loading analytics…</div>
-      </div>
+      <AdvocateLayout>
+        <div className="min-h-[60vh] flex items-center justify-center text-sm text-slate-400">Loading analytics…</div>
+      </AdvocateLayout>
     );
   }
 
@@ -99,9 +98,8 @@ export default function AdvocateDashboardPage() {
   const userName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || 'Advocate';
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-100">
-      <Navbar />
-      <main className="relative overflow-hidden flex-1 max-w-7xl mx-auto w-full px-6 py-8 flex flex-col gap-6">
+    <AdvocateLayout>
+      <main className="relative overflow-hidden max-w-7xl mx-auto w-full px-6 py-8 flex flex-col gap-6">
 
         <div className="pointer-events-none absolute -top-24 -left-16 h-56 w-56 rounded-full bg-blue-100/60 blur-3xl" />
         <div className="pointer-events-none absolute top-20 -right-20 h-64 w-64 rounded-full bg-slate-200/50 blur-3xl" />
@@ -241,6 +239,6 @@ export default function AdvocateDashboardPage() {
         </SectionCard>
 
       </main>
-    </div>
+    </AdvocateLayout>
   );
 }

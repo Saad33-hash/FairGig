@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import WorkerLayout from '../components/WorkerLayout';
+import AdvocateLayout from '../components/AdvocateLayout';
 import { api } from '../utils/api';
 import { useAuth } from '../hooks/useAuth';
 import { notifyError, notifySuccess } from '../utils/notify';
@@ -265,6 +266,10 @@ export default function GrievanceBoardPage() {
 
   if (user?.role === 'worker') {
     return <WorkerLayout>{boardContent}</WorkerLayout>;
+  }
+
+  if (user?.role === 'advocate') {
+    return <AdvocateLayout>{boardContent}</AdvocateLayout>;
   }
 
   return (

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Navbar from '../../components/Navbar';
+import AdvocateLayout from '../../components/AdvocateLayout';
 import { api } from '../../utils/api';
 import { notifyError, notifySuccess } from '../../utils/notify';
 
@@ -160,9 +160,8 @@ export default function AdvocateModerationPage() {
   const pages = Math.ceil(total / 15);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-100">
-      <Navbar />
-      <main className="flex-1 max-w-4xl mx-auto w-full px-6 py-8 flex flex-col gap-6">
+    <AdvocateLayout>
+      <main className="max-w-4xl mx-auto w-full px-6 py-8 flex flex-col gap-6">
 
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Grievance Moderation</h1>
@@ -211,6 +210,6 @@ export default function AdvocateModerationPage() {
           </div>
         )}
       </main>
-    </div>
+    </AdvocateLayout>
   );
 }
