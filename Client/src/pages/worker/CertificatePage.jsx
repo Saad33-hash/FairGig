@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import WorkerLayout from '../../components/WorkerLayout';
 import { useAuth } from '../../hooks/useAuth';
 import { notifyError } from '../../utils/notify';
@@ -15,6 +15,13 @@ export default function CertificatePage() {
   const [to, setTo]           = useState('');
   const [loading, setLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState('');
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
 
   const buildUrl = () => `${API_BASE}/certificate?from=${from}&to=${to}`;
 
@@ -35,7 +42,9 @@ export default function CertificatePage() {
       const html = await res.text();
       const blob = new Blob([html], { type: 'text/html' });
       const url  = URL.createObjectURL(blob);
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
       setPreviewUrl(url);
+      setPreviewOpen(true);
     } catch {
       notifyError('Could not reach the server');
     } finally {
@@ -53,6 +62,18 @@ export default function CertificatePage() {
     if (previewUrl) window.open(previewUrl, '_blank');
   };
 
+  const handleDownload = () => {
+    if (!previewUrl) return;
+    const link = document.createElement('a');
+    link.href = previewUrl;
+    link.download = `income-certificate-${from}-to-${to}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleClosePreview = () => setPreviewOpen(false);
+
   return (
     <WorkerLayout>
       <main className="max-w-5xl mx-auto w-full px-6 py-8 flex flex-col gap-6">
@@ -69,11 +90,11 @@ export default function CertificatePage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">From</label>
-              <input className={inputCls} type="date" value={from} onChange={(e) => { setFrom(e.target.value); setPreviewUrl(''); }} />
+              <input className={inputCls} type="date" value={from} onChange={(e) => { setFrom(e.target.value); setPreviewOpen(false); }} />
             </div>
             <div>
               <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">To</label>
-              <input className={inputCls} type="date" value={to} onChange={(e) => { setTo(e.target.value); setPreviewUrl(''); }} />
+              <input className={inputCls} type="date" value={to} onChange={(e) => { setTo(e.target.value); setPreviewOpen(false); }} />
             </div>
           </div>
 
@@ -81,12 +102,6 @@ export default function CertificatePage() {
             <button className={btnPrimary} onClick={handlePreview} disabled={loading || !from || !to}>
               {loading ? 'Generating…' : 'Generate Certificate'}
             </button>
-            {previewUrl && (
-              <>
-                <button className={btnGhost} onClick={handlePrint}>Print</button>
-                <button className={btnGhost} onClick={handleOpenTab}>Open in new tab</button>
-              </>
-            )}
           </div>
 
           <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-blue-50 border border-blue-100">
@@ -97,19 +112,28 @@ export default function CertificatePage() {
           </div>
         </div>
 
-        {/* Preview */}
-        {previewUrl && (
-          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col">
-            <div className="px-6 py-3 border-b border-slate-100 flex items-center justify-between">
-              <p className="text-sm font-semibold text-slate-700">Preview</p>
-              <button className="text-xs text-slate-400 hover:text-slate-700 transition-colors" onClick={() => setPreviewUrl('')}>✕ Close</button>
+        {previewOpen && previewUrl && (
+          <div className="fixed inset-0 z-50 bg-slate-900/45 backdrop-blur-sm flex items-center justify-center p-4" onClick={handleClosePreview}>
+            <div className="w-full max-w-6xl h-[90vh] bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+              <div className="px-5 py-3.5 border-b border-slate-200 bg-slate-50 flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Income Certificate Preview</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{from} to {to}</p>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button className={btnGhost} onClick={handlePrint}>Print</button>
+                  <button className={btnGhost} onClick={handleOpenTab}>Open in new tab</button>
+                  <button className={btnGhost} onClick={handleDownload}>Download</button>
+                  <button className={btnPrimary} onClick={handleClosePreview}>Close</button>
+                </div>
+              </div>
+
+              <iframe
+                src={previewUrl}
+                title="Income Certificate Preview"
+                className="w-full flex-1 border-0 bg-white"
+              />
             </div>
-            <iframe
-              src={previewUrl}
-              title="Income Certificate Preview"
-              className="w-full border-0"
-              style={{ height: '720px' }}
-            />
           </div>
         )}
 

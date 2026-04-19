@@ -57,7 +57,7 @@ function renderHTML({ worker, shifts, from, to }) {
     /* Header */
     .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 36px; }
     .brand  { display: flex; align-items: center; gap: 10px; }
-    .brand-dot { width: 28px; height: 28px; border-radius: 8px; background: #2563eb; }
+    .brand-logo { width: 28px; height: 28px; display: block; flex: 0 0 28px; }
     .brand-name { font-size: 15px; font-weight: 700; color: #0f172a; letter-spacing: -.3px; }
     .brand-sub  { font-size: 11px; color: #94a3b8; }
     .badge {
@@ -128,7 +128,18 @@ function renderHTML({ worker, shifts, from, to }) {
 
     <div class="header">
       <div class="brand">
-        <div class="brand-dot"></div>
+        <svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" aria-label="FairGig logo" role="img">
+          <defs>
+            <linearGradient id="fg-bg" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#2563EB"/>
+              <stop offset="1" stop-color="#0B1E3D"/>
+            </linearGradient>
+          </defs>
+          <rect x="4" y="4" width="56" height="56" rx="16" fill="url(#fg-bg)"/>
+          <circle cx="32" cy="32" r="19" fill="rgba(255,255,255,0.12)"/>
+          <path d="M20 23.5h17.8c1 0 1.8.8 1.8 1.8s-.8 1.8-1.8 1.8H25.5v5.2h9.4c1 0 1.8.8 1.8 1.8s-.8 1.8-1.8 1.8h-9.4v8.7c0 1-.8 1.8-1.8 1.8s-1.8-.8-1.8-1.8V25.3c0-1 .8-1.8 1.8-1.8Z" fill="#FFFFFF"/>
+          <path d="M39.5 22.5c1 0 1.8.8 1.8 1.8v15.4c0 1-.8 1.8-1.8 1.8s-1.8-.8-1.8-1.8V24.3c0-1 .8-1.8 1.8-1.8Z" fill="#DBEAFE"/>
+        </svg>
         <div>
           <div class="brand-name">FairGig</div>
           <div class="brand-sub">Income &amp; Rights Platform</div>
