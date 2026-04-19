@@ -5,15 +5,16 @@ import {
   ResponsiveContainer, Legend,
 } from 'recharts';
 import Navbar from '../../components/Navbar';
+import { useAuth } from '../../hooks/useAuth';
 import { api } from '../../utils/api';
 
 function fmt(n) { return Number(n).toLocaleString('en-PK', { minimumFractionDigits: 0 }); }
 
 function SectionCard({ title, subtitle, children }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col gap-4">
+    <div className="bg-white rounded-2xl border border-slate-200/90 p-6 flex flex-col gap-4 shadow-sm transition-all duration-300 hover:shadow-md">
       <div>
-        <h2 className="text-sm font-bold text-slate-900">{title}</h2>
+        <h2 className="text-sm font-bold tracking-wide text-slate-900">{title}</h2>
         {subtitle && <p className="text-xs text-slate-400 mt-0.5">{subtitle}</p>}
       </div>
       {children}
@@ -23,7 +24,8 @@ function SectionCard({ title, subtitle, children }) {
 
 function StatCard({ label, value, sub }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 px-6 py-5 flex flex-col gap-1">
+    <div className="group bg-white rounded-2xl border border-slate-200/90 px-6 py-5 flex flex-col gap-1 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-blue-200">
+      <div className="h-1.5 w-11 rounded-full bg-blue-200 mb-2 group-hover:bg-blue-500 transition-colors" />
       <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{label}</p>
       <p className="text-2xl font-bold text-slate-900">{value}</p>
       {sub && <p className="text-xs text-slate-500">{sub}</p>}
@@ -46,6 +48,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 const COLORS = ['#2563eb', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6'];
 
 export default function AdvocateDashboardPage() {
+  const { user } = useAuth();
   const [trends,       setTrends]       = useState([]);
   const [distribution, setDistribution] = useState([]);
   const [complaints,   setComplaints]   = useState(null);
@@ -93,15 +96,35 @@ export default function AdvocateDashboardPage() {
   const totalComplaints = complaints?.total ?? 0;
   const topCategory     = complaints?.byCategory?.[0];
   const topPlatform     = complaints?.byPlatform?.[0];
+  const userName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || 'Advocate';
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-100">
       <Navbar />
-      <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8 flex flex-col gap-6">
+      <main className="relative overflow-hidden flex-1 max-w-7xl mx-auto w-full px-6 py-8 flex flex-col gap-6">
 
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Advocate Analytics</h1>
-          <p className="text-sm text-slate-500 mt-1">Platform trends, income distribution, and worker vulnerability</p>
+        <div className="pointer-events-none absolute -top-24 -left-16 h-56 w-56 rounded-full bg-blue-100/60 blur-3xl" />
+        <div className="pointer-events-none absolute top-20 -right-20 h-64 w-64 rounded-full bg-slate-200/50 blur-3xl" />
+
+        <div className="relative rounded-2xl border border-blue-100 bg-linear-to-r from-blue-50 via-white to-slate-50 px-6 py-6 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div>
+              <span className="inline-flex items-center px-3 py-1 rounded-full border border-blue-200 bg-white text-xs font-semibold tracking-wide text-blue-700 uppercase">
+                Advocate Dashboard
+              </span>
+              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 leading-tight mt-3">
+                Welcome back, <span className="text-blue-700">{userName}</span>
+              </h1>
+              <p className="text-base sm:text-lg font-semibold text-slate-700 mt-2">Platform trends, income distribution, and worker vulnerability</p>
+            </div>
+
+            {user?.role && (
+              <div className="self-start px-4 py-2 rounded-xl bg-white border border-slate-200 shadow-xs">
+                <p className="text-[11px] uppercase tracking-wide font-semibold text-slate-400">Role</p>
+                <p className="text-sm font-bold text-slate-800 mt-0.5 capitalize">{user.role}</p>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Stat cards */}
@@ -153,20 +176,25 @@ export default function AdvocateDashboardPage() {
           {/* Top complaints */}
           <SectionCard title="Top Complaint Categories" subtitle="Last 7 days">
             {complaints?.byCategory?.length > 0 ? (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3">
                 {complaints.byCategory.map((c, i) => (
-                  <div key={c.category} className="flex items-center gap-3">
-                    <span className="w-5 text-xs font-bold text-slate-400 text-right">{i + 1}</span>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-semibold text-slate-700 capitalize">{c.category.replace('-', ' ')}</span>
-                        <span className="text-xs text-slate-500">{c.count}</span>
+                  <div key={c.category} className="group relative rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm transition-all duration-200 hover:border-blue-200 hover:shadow-md">
+                    <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-8 rounded-full bg-blue-300 group-hover:bg-blue-500 transition-colors" />
+                    <div className="flex items-start gap-3">
+                      <div className="w-7 h-7 rounded-full border border-blue-200 bg-blue-50 text-blue-700 text-xs font-bold flex items-center justify-center shrink-0">
+                        {i + 1}
                       </div>
-                      <div className="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
-                        <div
-                          className="h-full rounded-full bg-blue-600"
-                          style={{ width: `${Math.round((c.count / (complaints.byCategory[0]?.count || 1)) * 100)}%` }}
-                        />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs font-semibold text-slate-700 capitalize">{c.category.replace('-', ' ')}</span>
+                          <span className="text-xs text-slate-500">{c.count}</span>
+                        </div>
+                        <div className="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-blue-600"
+                            style={{ width: `${Math.round((c.count / (complaints.byCategory[0]?.count || 1)) * 100)}%` }}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
