@@ -78,31 +78,29 @@ export default function Navbar() {
 
       {/* User chip */}
       <div className="relative" ref={menuRef}>
-        <div className="flex items-center gap-2.5">
-          <div className="flex flex-col items-end gap-1">
-            <span className="text-sm font-semibold text-slate-900 leading-none">{getDisplayName(user)}</span>
-            {user?.role && (
-              <span className={`role-badge--${user.role} inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border capitalize`}>
-                {user.role}
-              </span>
-            )}
-          </div>
-          <button
-            onClick={() => setOpen((v) => !v)}
-            className="focus-visible:outline-2 focus-visible:outline-blue-500 rounded-full"
-            aria-haspopup="menu"
-            aria-expanded={open}
-          >
-            <img
-              src={getDiceBearAvatar(user)}
-              alt={getDisplayName(user)}
-              className="w-8 h-8 rounded-full border-2 border-slate-200"
-            />
-          </button>
-        </div>
+        <button
+          onClick={() => setOpen((v) => !v)}
+          className="focus-visible:outline-2 focus-visible:outline-blue-500 rounded-full"
+          aria-haspopup="menu"
+          aria-expanded={open}
+        >
+          <img
+            src={getDiceBearAvatar(user)}
+            alt={getDisplayName(user)}
+            className="w-8 h-8 rounded-full border-2 border-slate-200"
+          />
+        </button>
 
         {open && (
-          <div className="absolute right-0 top-[calc(100%+8px)] min-w-40 border border-slate-200 rounded-xl bg-white shadow-lg p-1 z-20" role="menu">
+          <div className="absolute right-0 top-[calc(100%+8px)] min-w-52 border border-slate-200 rounded-xl bg-white shadow-lg p-1.5 z-20" role="menu">
+            <div className="px-3 py-2.5 border-b border-slate-100 mb-1">
+              <p className="text-sm font-semibold text-slate-900 leading-none">{getDisplayName(user)}</p>
+              {user?.role && (
+                <span className={`role-badge--${user.role} mt-1.5 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border capitalize`}>
+                  {user.role}
+                </span>
+              )}
+            </div>
             <button
               onClick={handleLogout}
               className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
