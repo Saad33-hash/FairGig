@@ -26,7 +26,7 @@ jobs:
 
       - name: Install Client dependencies
         working-directory: Client
-        run: npm ci
+        run: npm install
 
       - name: Build Client
         working-directory: Client
@@ -70,12 +70,12 @@ jobs:
             # ── Server dependencies ───────────────────────────────────────
             echo "[2/6] Installing server dependencies..."
             cd /var/www/FairGig/Server
-            npm ci --omit=dev
+            npm install --omit=dev
 
             # ── Build frontend ────────────────────────────────────────────
             echo "[3/6] Building frontend..."
             cd /var/www/FairGig/Client
-            npm ci
+            npm install
             VITE_API_BASE_URL=https://vircosa.com/api npm run build
 
             # ── Copy build to nginx web root ──────────────────────────────
