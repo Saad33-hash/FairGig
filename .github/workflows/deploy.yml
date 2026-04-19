@@ -91,8 +91,12 @@ jobs:
             cd /var/www/FairGig/analytics-service
             pip install -r requirements.txt -q
 
+            # ── Reload nginx to serve new frontend build ──────────────
+            echo "[6/7] Reloading nginx..."
+            sudo systemctl reload nginx
+
             # ── Restart Node server via pm2 ───────────────────────────────
-            echo "[6/6] Restarting Node server..."
+            echo "[7/7] Restarting Node server..."
             cd /var/www/FairGig/Server
             pm2 restart fairgig
             pm2 restart analytics-service
