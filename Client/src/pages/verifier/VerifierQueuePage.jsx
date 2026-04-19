@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Navbar from '../../components/Navbar';
+import VerifierLayout from '../../components/VerifierLayout';
 import { api } from '../../utils/api';
 import { notifyError, notifySuccess } from '../../utils/notify';
 
@@ -31,18 +31,28 @@ function QueueCard({ item, onReviewed }) {
     : '—';
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col gap-5">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div className="flex flex-col gap-0.5">
-          <span className="text-sm font-bold text-slate-900">{worker?.firstName} {worker?.lastName}</span>
-          <span className="text-xs text-slate-500">{worker?.city} · {worker?.category}</span>
+    <article className="group relative overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:border-blue-200 min-h-64">
+      <div className="pointer-events-none absolute -left-8 -bottom-8 h-28 w-28 rounded-full bg-blue-400/30 blur-3xl opacity-0 scale-90 transition-all duration-300 group-hover:opacity-100 group-hover:scale-110" />
+
+      <div className="relative z-10 flex flex-col gap-5">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 text-sm font-bold text-slate-900">
+                {worker?.firstName} {worker?.lastName}
+              </span>
+              <span className="text-xs text-slate-500">{worker?.city} · {worker?.category}</span>
+            </div>
+            <span className="text-[11px] uppercase tracking-wide font-semibold text-slate-400">Pending Review</span>
+          </div>
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold border border-amber-200 bg-amber-50 text-amber-700">
+            Queue
+          </span>
         </div>
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold border badge-pending">Pending Review</span>
-      </div>
 
       {/* Shift summary */}
-      <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
         {[
           { label: 'Platform',     value: shift?.platform },
           { label: 'Date',         value: dateStr },
@@ -51,19 +61,19 @@ function QueueCard({ item, onReviewed }) {
           { label: 'Deductions',   value: `−${fmt(shift?.platformDeductions)}`, cls: 'deduction-cell' },
           { label: 'Net (PKR)',    value: fmt(shift?.netReceived),       cls: 'net-cell' },
         ].map(({ label, value, cls }) => (
-          <div key={label} className="flex flex-col gap-0.5">
+          <div key={label} className="rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2 flex flex-col gap-0.5">
             <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{label}</span>
-            <span className={`text-sm font-medium text-slate-900 ${cls || ''}`}>{value}</span>
+            <span className={`text-sm font-semibold text-slate-900 ${cls || ''}`}>{value}</span>
           </div>
         ))}
       </div>
 
       {/* Screenshot */}
-      <div>
+      <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3">
         <img
           src={`${SERVER_URL}/uploads/${screenshot.filePath}`}
           alt="Earnings screenshot"
-          className={`queue-screenshot${expanded ? ' queue-screenshot--expanded' : ''}`}
+          className={`queue-screenshot${expanded ? ' queue-screenshot--expanded' : ''} shadow-sm`}
           onClick={() => setExpanded((v) => !v)}
           title={expanded ? 'Click to collapse' : 'Click to expand'}
         />
@@ -73,11 +83,11 @@ function QueueCard({ item, onReviewed }) {
       </div>
 
       {/* Note */}
-      <div>
+      <div className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm">
         <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5">Note (optional)</label>
         <textarea
-          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-y"
-          style={{ minHeight: 72 }}
+          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-y"
+          style={{ minHeight: 84 }}
           placeholder="Describe the discrepancy or reason for your decision…"
           value={note}
           onChange={(e) => setNote(e.target.value)}
@@ -85,21 +95,22 @@ function QueueCard({ item, onReviewed }) {
       </div>
 
       {/* Decision buttons */}
-      <div className="flex gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
         <button
-          className="px-4 py-2 rounded-xl text-sm font-semibold bg-green-600 hover:bg-green-700 text-white transition-colors disabled:opacity-60"
+          className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-green-600 hover:bg-green-700 text-white transition-colors disabled:opacity-60 shadow-sm"
           disabled={loading} onClick={() => handleDecision('verified')}
         >Confirm</button>
         <button
-          className="px-4 py-2 rounded-xl text-sm font-semibold bg-red-600 hover:bg-red-700 text-white transition-colors disabled:opacity-60"
+          className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-red-600 hover:bg-red-700 text-white transition-colors disabled:opacity-60 shadow-sm"
           disabled={loading} onClick={() => handleDecision('flagged')}
         >Flag Discrepancy</button>
         <button
-          className="px-4 py-2 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors disabled:opacity-60"
+          className="px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-colors disabled:opacity-60 shadow-sm"
           disabled={loading} onClick={() => handleDecision('unverifiable')}
         >Unverifiable</button>
       </div>
-    </div>
+      </div>
+    </article>
   );
 }
 
@@ -133,13 +144,15 @@ export default function VerifierQueuePage() {
   const pages = Math.ceil(total / 10);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-100">
-      <Navbar />
-      <main className="flex-1 max-w-4xl mx-auto w-full px-6 py-8 flex flex-col gap-6">
+    <VerifierLayout>
+      <main className="max-w-6xl mx-auto w-full px-6 py-8 flex flex-col gap-6">
 
-        <div className="flex items-start justify-between">
+        <div className="rounded-2xl border border-blue-100 bg-linear-to-r from-blue-50 via-white to-slate-50 px-6 py-5 shadow-sm flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Review Queue</h1>
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase border border-blue-200 bg-white text-blue-700">
+              Verifier Queue
+            </span>
+            <h1 className="text-2xl font-bold text-slate-900 mt-2">Review Queue</h1>
             <p className="text-sm text-slate-500 mt-1">{total} screenshot{total !== 1 ? 's' : ''} pending review</p>
           </div>
         </div>
@@ -152,7 +165,7 @@ export default function VerifierQueuePage() {
             <p className="text-sm text-slate-500 mt-1.5">No screenshots are pending review right now.</p>
           </div>
         ) : (
-          <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {items.map((item) => (
               <QueueCard key={item.screenshot._id} item={item} onReviewed={handleReviewed} />
             ))}
@@ -167,6 +180,6 @@ export default function VerifierQueuePage() {
           </div>
         )}
       </main>
-    </div>
+    </VerifierLayout>
   );
 }
