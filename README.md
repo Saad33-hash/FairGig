@@ -1,5 +1,7 @@
 # FairGig — Gig Worker Income & Rights Platform
 
+> ## 🌐 Live Demo: [vircosa.com](https://vircosa.com)
+
 FairGig is a full-stack platform built for Pakistan's gig economy. It gives workers a verifiable record of their earnings, detects exploitative commission patterns using statistical analysis, and provides advocates with aggregate labour intelligence — all without requiring cooperation from the platforms themselves.
 
 Built for **SOFTEC 2026 Web Development Competition**.
